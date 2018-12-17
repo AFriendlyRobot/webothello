@@ -1,5 +1,6 @@
 var board = [];
 var pieces = [];
+var squares = [];
 
 const RECT_WIDTH = 64;
 const directions = ['ul', 'u', 'ur', 'r', 'dr', 'd', 'dl', 'l'];
@@ -38,12 +39,15 @@ function drawBoard() {
 
 	for (let i = 0; i < 8; i++) {
 		board.push([]);
+		squares.push([]);
 		for (let j = 0; j < 8; j++) {
 			board[i].push(0);
 			let newBox = $(`<span id="${(i * 8) + j}" class="board-square">`);
 			newBox.on('click', (event) => {
 				registerClick(i, j);
 			});
+
+			squares[i].push(newBox);
 
 			gameDiv.append(newBox);
 		}
@@ -55,8 +59,6 @@ function makePointer() {
 	$('html').on('mousemove', (event) => {
 		pointer.css('left', `${event.clientX - 24}px`);
 		pointer.css('top', `${event.clientY - 24}px`);
-		console.log(event.clientX);
-		console.log(event.clientY);
 	});
 	$('body').append(pointer);
 }
@@ -75,6 +77,7 @@ function placePiece(row, col, color) {
 	if (board[row][col] !== 0) { return; } // Don't overwrite
 
 	board[row][col] = (color === 'white') ? 1 : -1;
+	$(squares[row][col]).addClass('occupied');
 
 	drawPiece(row, col, color);
 }
@@ -147,7 +150,11 @@ function calcPossibleMoves() {
 
 	for (let row = 0; row < 8; row++) {
 		for (let col = 0; col < 8; col++) {
+			$(squares[row][col]).removeClass('valid');
+
 			k = (row * 8) + col;
+
+			let isValid = false;
 
 			if (board[row][col] !== 0) { continue; }
 
@@ -163,6 +170,8 @@ function calcPossibleMoves() {
 					let validLoc = checkPosition(newR, newC, original, direct);
 
 					if (validLoc) {
+						isValid = true;
+
 						if (!(k in potentials)) {
 							potentials[k] = {};
 						}
@@ -170,6 +179,10 @@ function calcPossibleMoves() {
 						potentials[k][direct] = true;
 					}
 				}
+			}
+
+			if (isValid) {
+				squares[row][col].addClass('valid');
 			}
 		}
 	}
@@ -251,6 +264,10 @@ function endGame() {
 		let winner = (w > b) ? 'White' : 'Black';
 		alert(`${winner} wins!`);
 	}
+
+	$('#pointer-piece').remove();
+
+	$('html, body').css('cursor', 'default');
 }
 
 function outOfBounds(row, col) {

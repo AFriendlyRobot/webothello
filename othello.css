@@ -28,6 +28,18 @@ body {
 	margin: 0;
 }
 
+.board-square:hover {
+	background-color: rgb(200, 50, 50);
+}
+
+.board-square.valid:hover {
+	background-color: rgb(50, 200, 50);
+}
+
+.board-square.occupied:hover, .board-square.valid.occupied:hover {
+	background-color: darkgreen;
+}
+
 br {
 	height: 0;
 	width: 0;
@@ -46,10 +58,12 @@ br {
 
 .piece.white {
 	background-color: white;
+	border: 2px solid black;
 }
 
 .piece.black {
 	background-color: black;
+	border: 1px solid gray;
 }
 
 #pointer-piece {
