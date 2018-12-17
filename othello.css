@@ -54,6 +54,15 @@ br {
 	display: inline-block;
 	position: absolute;
 	box-sizing: border-box;
+	/*transition: all 0.15s;*/
+	transition: width 0.15s, margin 0.15s;
+	transform: rotate(-45deg);
+	transform-origin: center;
+}
+
+.piece.transition {
+	width: 8px;
+	margin-left: 18px;
 }
 
 .piece.white {
@@ -70,4 +79,5 @@ br {
 	z-index: 10;
 	position: absolute;
 	pointer-events: none;
+	transition: none;
 }

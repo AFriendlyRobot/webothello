@@ -56,6 +56,8 @@ function drawBoard() {
 
 function makePointer() {
 	pointer = $('<div id="pointer-piece" class="piece black">');
+	pointer.css('left', '-100px');
+	pointer.css('top', '-100px');
 	$('html').on('mousemove', (event) => {
 		pointer.css('left', `${event.clientX - 24}px`);
 		pointer.css('top', `${event.clientY - 24}px`);
@@ -219,10 +221,22 @@ function flipPosition(row, col, origin, direction) {
 	let otherClass = (origin === 1) ? 'black' : 'white';
 
 	board[row][col] = origin;
-	$(pieces[row][col]).removeClass(otherClass);
-	$(pieces[row][col]).addClass(originClass);
+	// $(pieces[row][col]).removeClass(otherClass);
+	// $(pieces[row][col]).addClass(originClass);
+	flipPiece(pieces[row][col], otherClass, originClass);
 
-	flipPosition(row+rdelta, col+cdelta, origin, direction);
+	setTimeout(() => {
+		flipPosition(row+rdelta, col+cdelta, origin, direction);
+	}, 100);
+}
+
+function flipPiece(piece, original, destination) {
+	$(piece).addClass('transition');
+	setTimeout(() => {
+		$(piece).removeClass(original);
+		$(piece).addClass(destination);
+		$(piece).removeClass('transition');
+	}, 150);
 }
 
 function deltasFromDirection(direct) {
