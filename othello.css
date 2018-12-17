@@ -1,0 +1,59 @@
+html {
+	width: 100vw;
+	height: 100vh;
+	overflow: hidden;
+	cursor: none;
+	line-height: 0;
+}
+
+html, body {
+	cursor: none;
+}
+
+#game {
+	width: calc(64px * 8);
+}
+
+body {
+	margin: 0;
+}
+
+.board-square {
+	width: 64px;
+	height: 64px;
+	box-sizing: border-box;
+	border: 2px solid black;
+	background-color: darkgreen;
+	display: inline-block;
+	margin: 0;
+}
+
+br {
+	height: 0;
+	width: 0;
+	margin: 0;
+}
+
+.piece {
+	width: 48px;
+	height: 48px;
+	border: 2px solid black;
+	border-radius: 48px;
+	display: inline-block;
+	position: absolute;
+	box-sizing: border-box;
+}
+
+.piece.white {
+	background-color: white;
+}
+
+.piece.black {
+	background-color: black;
+}
+
+#pointer-piece {
+	z-index: 10;
+	position: absolute;
+	pointer-events: none;
+}
