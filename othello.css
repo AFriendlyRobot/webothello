@@ -2,16 +2,13 @@ html {
 	width: 100vw;
 	height: 100vh;
 	overflow: hidden;
-	cursor: none;
+	/*cursor: none;*/
 	line-height: 0;
-}
-
-html, body {
-	cursor: none;
 }
 
 #game {
 	width: calc(64px * 8);
+	cursor: none;
 }
 
 body {

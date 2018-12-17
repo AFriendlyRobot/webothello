@@ -11,6 +11,8 @@ var potentials = {};
 
 var pointer = null;
 
+var numWaiting = 0;
+
 function init() {
 	fillPieces();
 	drawBoard();
@@ -20,6 +22,18 @@ function init() {
 	placePiece(4, 3, 'black');
 	calcPossibleMoves();
 	makePointer();
+}
+
+function addWaiting() {
+	numWaiting += 1;
+}
+
+function removeWaiting() {
+	numWaiting -= 1;
+}
+
+function isWaiting() {
+	return (numWaiting > 0);
 }
 
 function fillPieces() {
@@ -56,12 +70,19 @@ function drawBoard() {
 
 function makePointer() {
 	pointer = $('<div id="pointer-piece" class="piece black">');
-	pointer.css('left', '-100px');
-	pointer.css('top', '-100px');
-	$('html').on('mousemove', (event) => {
+	
+	pointer.css('display', 'none');
+
+	$('#game').on('mousemove', (event) => {
+		pointer.css('display', 'block');
 		pointer.css('left', `${event.clientX - 24}px`);
 		pointer.css('top', `${event.clientY - 24}px`);
 	});
+
+	$('#game').on('mouseleave', (event) => {
+		pointer.css('display', 'none');
+	});
+
 	$('body').append(pointer);
 }
 
@@ -103,6 +124,10 @@ function rowColToXY(row, col) {
 
 function registerClick(row, col) {
 	// console.log({row, col});
+	if (isWaiting()) {
+		return;
+	}
+
 	let check = canPlacePiece(row, col);
 	if (!check) {
 		// alert("Get better!");
@@ -232,10 +257,12 @@ function flipPosition(row, col, origin, direction) {
 
 function flipPiece(piece, original, destination) {
 	$(piece).addClass('transition');
+	addWaiting();
 	setTimeout(() => {
 		$(piece).removeClass(original);
 		$(piece).addClass(destination);
 		$(piece).removeClass('transition');
+		removeWaiting();
 	}, 150);
 }
 
