@@ -106,9 +106,12 @@ function placePiece(row, col, color) {
 }
 
 function drawPiece(row, col, color) {
-	let { x, y } = rowColToXY(row, col);
+	// let { x, y } = rowColToXY(row, col);
+	let { deltaX, deltaY } = rowColToDeltas(row, col);
 
-	let newPiece = $(`<span class="piece ${color}" style="left: ${x}px; top: ${y}px;">`);
+	// let newPiece = $(`<span class="piece ${color}" style="left: ${x}px; top: ${y}px;">`);
+	let newTransform = `transform: translate(${deltaX}px, ${deltaY}px);`;
+	let newPiece = $(`<span class="piece ${color}" style="${newTransform}">`);
 
 	$("#game").append(newPiece);
 
@@ -120,6 +123,18 @@ function rowColToXY(row, col) {
 	let y = (row * (64)) + 8;
 
 	return { x, y };
+}
+
+function rowColToDeltas(row, col) {
+	const baseX = -56;
+	const baseY = 8;
+
+	let xd = baseX + ((col - 7) * 64);
+	let yd = baseY + ((row - 7) * 64);
+
+	console.log({row, col, xd, yd});
+
+	return { deltaX: xd, deltaY: yd };
 }
 
 function registerClick(row, col) {
@@ -169,6 +184,7 @@ function swapGoing() {
 	$("#going-title").text(`${going.slice(0,1).toUpperCase() + going.slice(1)} turn`);
 }
 
+// TODO some broken edge cases?
 function calcPossibleMoves() {
 	let original = (going === 'white') ? 1 : -1;
 	let opCheck = original * -1;
@@ -213,6 +229,14 @@ function calcPossibleMoves() {
 			}
 		}
 	}
+
+	// console.log(potentials);
+	console.log(board);
+	console.log(countPieces());
+}
+
+function countPieces() {
+	return board.map((row) => row.reduce((t, v) => t + Math.abs(v))).reduce((t, v) => t + v);
 }
 
 function checkPosition(row, col, origin, direction) {
@@ -231,14 +255,14 @@ function checkPosition(row, col, origin, direction) {
 	}
 }
 
+
+// TODO: The error seems to be because of the timeout. Need a way to handle asynchronous behavior
+//       e.g. await finished flipping
 function flipPosition(row, col, origin, direction) {
 	let { rdelta, cdelta } = deltasFromDirection(direction);
 
-	if (outOfBounds(row, col)) {
-		return;
-	}
-
-	if (board[row][col] === origin) {
+	if (outOfBounds(row, col) || board[row][col] === origin) {
+		doneFlipping();
 		return;
 	}
 

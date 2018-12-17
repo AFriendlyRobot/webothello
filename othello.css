@@ -3,16 +3,26 @@ html {
 	height: 100vh;
 	overflow: hidden;
 	/*cursor: none;*/
-	line-height: 0;
+	/*line-height: 0;*/
 }
 
 #game {
 	width: calc(64px * 8);
 	cursor: none;
+	margin: auto;
+	line-height: 0;
 }
 
 body {
 	margin: 0;
+}
+
+h1 {
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 2vh;
+	margin-bottom: 3vh;
 }
 
 .board-square {
