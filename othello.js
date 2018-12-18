@@ -132,29 +132,32 @@ function rowColToDeltas(row, col) {
 	let xd = baseX + ((col - 7) * 64);
 	let yd = baseY + ((row - 7) * 64);
 
-	console.log({row, col, xd, yd});
-
 	return { deltaX: xd, deltaY: yd };
 }
 
-function registerClick(row, col) {
-	// console.log({row, col});
+async function registerClick(row, col) {
 	if (isWaiting()) {
 		return;
 	}
 
 	let check = canPlacePiece(row, col);
 	if (!check) {
-		// alert("Get better!");
-		console.log("Invalid move");
+		console.warn("Invalid move");
 		return;
 	}
 
 	placePiece(row, col, going);
 
+	let promises = [];
+
 	for (let direct in potentials[(row * 8) + col]) {
 		let { rdelta, cdelta } = deltasFromDirection(direct);
-		flipPosition(row+rdelta, col+cdelta, board[row][col], direct);
+		promises.push(flipPosition(row+rdelta, col+cdelta, board[row][col], direct));
+	}
+
+	// Ugly synchronization
+	for (let i = 0; i < promises.length; i++) {
+		await promises[i];
 	}
 
 	swapGoing();
@@ -229,10 +232,6 @@ function calcPossibleMoves() {
 			}
 		}
 	}
-
-	// console.log(potentials);
-	console.log(board);
-	console.log(countPieces());
 }
 
 function countPieces() {
@@ -258,11 +257,11 @@ function checkPosition(row, col, origin, direction) {
 
 // TODO: The error seems to be because of the timeout. Need a way to handle asynchronous behavior
 //       e.g. await finished flipping
-function flipPosition(row, col, origin, direction) {
+async function flipPosition(row, col, origin, direction) {
 	let { rdelta, cdelta } = deltasFromDirection(direction);
 
 	if (outOfBounds(row, col) || board[row][col] === origin) {
-		doneFlipping();
+		// doneFlipping();
 		return;
 	}
 
@@ -274,9 +273,11 @@ function flipPosition(row, col, origin, direction) {
 	// $(pieces[row][col]).addClass(originClass);
 	flipPiece(pieces[row][col], otherClass, originClass);
 
-	setTimeout(() => {
-		flipPosition(row+rdelta, col+cdelta, origin, direction);
-	}, 100);
+	return new Promise((resolve) => {
+		setTimeout(() => {
+			resolve(flipPosition(row+rdelta, col+cdelta, origin, direction));
+		}, 100);
+	});
 }
 
 function flipPiece(piece, original, destination) {
