@@ -11,6 +11,7 @@ html {
 	cursor: none;
 	margin: auto;
 	line-height: 0;
+	border: 5px solid black;
 }
 
 body {
